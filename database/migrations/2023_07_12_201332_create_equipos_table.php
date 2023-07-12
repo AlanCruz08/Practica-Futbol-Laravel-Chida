@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('equipos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 60);
+            $table->string('nombre', 60)->unique();
             $table->string('dir_deportivo', 90);
             $table->foreignId('estadio_id')->constrained('estadios');
             $table->timestamps();
