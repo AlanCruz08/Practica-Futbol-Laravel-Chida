@@ -4,82 +4,128 @@ namespace App\Http\Controllers;
 
 use App\Models\futbolista;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class FutbolistaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $reglas = [
+        'nombre' => 'required|string|min:3|max:60',
+        'ap_paterno' => 'required|string|min:3|max:60',
+        'ap_materno' => 'nullable|string|min:3|max:60|null',
+        'alias' => 'nullable|string|min:3|max:60',
+        'no_camiseta' => 'required|numeric',
+    ];
+
     public function index()
     {
-        //
+        $futbolistas = futbolista::all();
+
+        return response()->json([
+            'msg' => 'Futbolistas obtenidos correctamente',
+            'data' => $futbolistas,
+            'status' => 200
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $futbolista = futbolista::create($validator->validated());
+
+        if (!$futbolista->save())
+            return response()->json([
+                'msg' => 'Error al crear el futbolista',
+                'data' => null,
+                'status' => 422
+            ], 422);
+
+        return response()->json([
+            'msg' => 'futbolista creado correctamente',
+            'data' => $futbolista,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\futbolista  $futbolista
-     * @return \Illuminate\Http\Response
-     */
-    public function show(futbolista $futbolista)
+    public function update(Request $request, int $futbolistaID)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $futbolista = futbolista::find($futbolistaID);
+        if (!$futbolista)
+            return response()->json([
+                'msg' => 'No encontrado',
+                'data' => null,
+                'status' => 404
+            ], 404);
+
+        $futbolista->update($validator->validated());
+
+        if (!$futbolista->save())
+            return response()->json([
+                'msg' => 'Error al actualizar el futbolista',
+                'data' => null,
+                'status' => 422
+            ], 422);
+
+        return response()->json([
+            'msg' => 'Futbolista actualizado correctamente',
+            'data' => $futbolista,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\futbolista  $futbolista
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(futbolista $futbolista)
+    public function destroy(int $futbolistaID, Request $request)
     {
-        //
-    }
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+        
+        $futbolista = futbolista::find($futbolistaID);
+        if (!$futbolista)
+            return response()->json([
+                'msg' => 'No se encontro el futbolista',
+                'data' => $futbolistaID,
+                'status' => 404
+            ], 404);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\futbolista  $futbolista
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, futbolista $futbolista)
-    {
-        //
-    }
+        $futbolista->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\futbolista  $futbolista
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(futbolista $futbolista)
-    {
-        //
+        return response()->json([
+            'msg' => 'Futbolista eliminado correctamente',
+            'data' => $futbolista,
+            'status' => 201
+        ], 201);
     }
 }

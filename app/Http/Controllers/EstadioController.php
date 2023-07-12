@@ -102,8 +102,15 @@ class EstadioController extends Controller
         ], 201);
     }
 
-    public function destroy(int $estadioID)
+    public function destroy(int $estadioID, Request $request)
     {
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+        
         $estadio = estadio::find($estadioID);
         if (!$estadio)
             return response()->json([
