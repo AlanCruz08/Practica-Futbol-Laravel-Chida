@@ -4,82 +4,134 @@ namespace App\Http\Controllers;
 
 use App\Models\equipo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+use function PHPUnit\Framework\returnSelf;
 
 class EquipoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $reglas = [
+        'nombre' => 'required|string|max:255',
+        'dir_deportivo' => 'required|string|max:255',
+        'estadio_id' => 'required|numeric'
+    ];
     public function index()
     {
-        //
+
+        $equipos = equipo::all();
+
+        return response()->json([
+            'msg' => 'Equipos obtenidos correctamente',
+            'data' => $equipos,
+            'status' => 200
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $equipoExist = Equipo::where('nombre', $request->nombre)->first();
+
+        if ($equipoExist)
+            return response()->json([
+                'msg' => 'Equipo ya existente',
+                'data' => $equipoExist,
+                'status' => 422
+            ], 422);
+
+
+        $equipo = equipo::create($validator->validated());
+
+        if (!$equipo->save())
+            return response()->json([
+                'msg' => 'Error al crear el equipo',
+                'data' => null,
+                'status' => 422
+            ], 422);
+
+        return response()->json([
+            'msg' => 'Equipo creada correctamente',
+            'data' => $equipo,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\equipo  $equipo
-     * @return \Illuminate\Http\Response
-     */
-    public function show(equipo $equipo)
+    public function update(Request $request, int $equipoID)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $equipo = equipo::find($equipoID);
+        if (!$equipo)
+            return response()->json([
+                'msg' => 'Equipo NO encontrado',
+                'data' => null,
+                'status' => 404
+            ], 404);
+
+        $equipoExist = Equipo::where('nombre', $request->nombre)->first();
+
+        if ($equipoExist && $equipoExist->id != $equipoID)
+            return response()->json([
+                'msg' => 'Nombre en uso',
+                'data' => $equipoExist,
+                'status' => 422
+            ], 422);
+
+        
+        $equipo->update($request->all());
+
+        return response()->json([
+            'msg' => 'Equipo actualizado correctamente',
+            'data' => $equipo,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\equipo  $equipo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(equipo $equipo)
+    public function destroy(int $equipoID)
     {
-        //
-    }
+        $equipo = equipo::find($equipoID);
+        if (!$equipo)
+            return response()->json([
+                'msg' => 'No se encontro el equipo',
+                'data' => $equipoID,
+                'status' => 404
+            ], 404);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\equipo  $equipo
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, equipo $equipo)
-    {
-        //
-    }
+        $equipo->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\equipo  $equipo
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(equipo $equipo)
-    {
-        //
+        return response()->json([
+            'msg' => 'Equipo eliminado correctamente',
+            'data' => $equipo,
+            'status' => 201
+        ], 201);
     }
 }

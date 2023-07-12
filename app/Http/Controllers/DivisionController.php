@@ -15,8 +15,7 @@ class DivisionController extends Controller
         'liga' => 'required|string|max:255',
     ];
 
-    public function index()
-    {
+    public function index(){
         $divisiones = division::all();
 
         return response()->json([
@@ -26,8 +25,7 @@ class DivisionController extends Controller
         ], 200);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
 
         $validator = Validator::make($request->all(), $this->reglas);
 
@@ -61,8 +59,7 @@ class DivisionController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, int $divisionID)
-    {
+    public function update(Request $request, int $divisionID){
 
         $validator = Validator::make($request->all(), $this->reglas);
 
@@ -106,13 +103,12 @@ class DivisionController extends Controller
         ], 201);
     }
 
-    public function destroy(int $divisionID)
-    {
+    public function destroy(int $divisionID){
         $division = division::find($divisionID);
         if (!$division)
             return response()->json([
                 'msg' => 'No se encontro la division',
-                'data' => null,
+                'data' => $divisionID,
                 'status' => 404
             ], 404);
 
