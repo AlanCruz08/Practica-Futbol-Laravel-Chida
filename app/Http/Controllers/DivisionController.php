@@ -11,20 +11,13 @@ class DivisionController extends Controller
 {
 
     protected $reglas = [
-        'nivel' => 'required|string|max:255',
+        'nivel' => 'required|numeric|max:8',
         'liga' => 'required|string|max:255',
     ];
 
     public function index()
     {
         $divisiones = division::all();
-        if (!$divisiones) {
-            return response()->json([
-                'msg' => 'Divisiones vacias',
-                'data' => $divisiones,
-                'status' => 204
-            ], 204);
-        }
 
         return response()->json([
             'msg' => 'Divisiones obtenidas correctamente',
@@ -68,7 +61,7 @@ class DivisionController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, division $divisionID)
+    public function update(Request $request, int $divisionID)
     {
 
         $validator = Validator::make($request->all(), $this->reglas);
@@ -96,32 +89,39 @@ class DivisionController extends Controller
                 'status' => 404
             ], 404);
 
-        //Si la validacion no falla, se actualiza el objeto
         $division->nivel = $request->nivel;
         $division->liga = $request->liga;
 
-        $division->save();
-
-        //Si la validacion no falla, se actualiza el objeto
-
-        if ($division->save())
-            return response()->json([
-                'msg' => 'Division actualizada correctamente',
-                'data' => $division,
-                'status' => 201
-            ], 201);
-
-        //Si la persona no se actualizo correctamente, se retorna un error
-        else
+        if (!$division->save())
             return response()->json([
                 'msg' => 'Error al actualizar la division',
                 'data' => null,
                 'status' => 422
             ], 422);
+
+        return response()->json([
+            'msg' => 'Division actualizada correctamente',
+            'data' => $division,
+            'status' => 201
+        ], 201);
     }
 
-    public function destroy(division $division)
+    public function destroy(int $divisionID)
     {
-        //
+        $division = division::find($divisionID);
+        if (!$division)
+            return response()->json([
+                'msg' => 'No se encontro la division',
+                'data' => null,
+                'status' => 404
+            ], 404);
+
+        $division->delete();
+
+        return response()->json([
+            'msg' => 'Division eliminada correctamente',
+            'data' => $division,
+            'status' => 201
+        ], 201);
     }
 }
