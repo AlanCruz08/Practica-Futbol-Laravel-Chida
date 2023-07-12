@@ -4,82 +4,120 @@ namespace App\Http\Controllers;
 
 use App\Models\estadio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class EstadioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $reglas = [
+        'nombre' => 'required|string|max:255',
+        'pais' => 'required|string|max:255',
+        'capacidad' => 'required|numeric',
+    ];
     public function index()
     {
-        //
+        $estadios = estadio::all();
+        return response()->json([
+            'msg' => 'Estadios obtenidos correctamente',
+            'data' => $estadios,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $estadio = estadio::create($validator->validated());
+
+        if (!$estadio->save())
+            return response()->json([
+                'msg' => 'Error al crear el estadio',
+                'data' => null,
+                'status' => 422
+            ], 422);
+
+        return response()->json([
+            'msg' => 'Estadio creado correctamente',
+            'data' => $estadio,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\estadio  $estadio
-     * @return \Illuminate\Http\Response
-     */
-    public function show(estadio $estadio)
+    public function update(Request $request, int $estadioID)
     {
-        //
+        $validator = Validator::make($request->all(), $this->reglas);
+
+        if ($validator->fails())
+            return response()->json([
+                'msg' => 'Error de validación',
+                'data' => $validator->errors(),
+                'status' => 422
+            ], 422);
+
+        if (!$request->bearerToken())
+            return response()->json([
+                'msg' => 'No autorizado',
+                'data' => null,
+                'status' => 401
+            ], 401);
+
+        $estadio = estadio::find($estadioID);
+        if (!$estadio)
+            return response()->json([
+                'msg' => 'No encontrado',
+                'data' => null,
+                'status' => 404
+            ], 404);
+
+        $estadio->nombre = $request->nombre;
+        $estadio->pais = $request->pais;
+        $estadio->capacidad = $request->capacidad;
+
+        if (!$estadio->save())
+            return response()->json([
+                'msg' => 'Error al actualizar el estadio',
+                'data' => null,
+                'status' => 422
+            ], 422);
+
+        return response()->json([
+            'msg' => 'Estadio actualizado correctamente',
+            'data' => $estadio,
+            'status' => 201
+        ], 201);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\estadio  $estadio
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(estadio $estadio)
+    public function destroy(int $estadioID)
     {
-        //
-    }
+        $estadio = estadio::find($estadioID);
+        if (!$estadio)
+            return response()->json([
+                'msg' => 'No se encontro el estadio',
+                'data' => $estadioID,
+                'status' => 404
+            ], 404);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\estadio  $estadio
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, estadio $estadio)
-    {
-        //
-    }
+        $estadio->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\estadio  $estadio
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(estadio $estadio)
-    {
-        //
+        return response()->json([
+            'msg' => 'Estadio eliminado correctamente',
+            'data' => $estadio,
+            'status' => 201
+        ], 201);
     }
 }
