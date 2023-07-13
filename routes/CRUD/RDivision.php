@@ -24,4 +24,13 @@ Route::middleware(['auth:sanctum'])
         Route::delete('/{divisionID}', [DivisionController::class, 'destroy'])
             ->name('destroy')
             ->where('divisionID', '[0-9]+');
+
+        Route::post('/ascender/{equipoID}', [DivisionController::class, 'ascender'])
+        ->name('ascender')
+        ->where('equipoID', '[0-9]+');
+
+        Route::post('/descender/{equipoID}', [DivisionController::class, 'descender'])
+        ->name('descender')
+        ->where('equipoID', '[0-9]+');
+
     });
