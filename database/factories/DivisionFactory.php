@@ -17,7 +17,8 @@ class DivisionFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'nivel' => $this->faker->numberBetween(1, 5),
+            'liga' => $this->faker->word,
         ];
     }
 }
