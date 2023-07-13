@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
+use Database\Seeders\EquipoSeeder;
 
 Route::middleware(['auth:sanctum'])
     ->prefix('equipo')
@@ -22,4 +23,12 @@ Route::middleware(['auth:sanctum'])
         Route::delete('/{equipoID}', [EquipoController::class, 'destroy'])
             ->name('destroy')
             ->where('equipoID', '[0-9]+');
+
+        Route::post('/fichaje/{$futbolistaID}', [EquipoController::class, 'fichaje'])
+            ->name('fichaje')
+            ->where('futbolistaID', '[0-9]+');
+
+        Route::post('/expulsion/{$futbolistaID}', [EquipoController::class, 'expulsion'])
+            ->name('expulsion')
+            ->where('futbolistaID', '[0-9]+');
     });
