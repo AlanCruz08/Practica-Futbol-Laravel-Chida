@@ -24,11 +24,13 @@ Route::middleware(['auth:sanctum'])
             ->name('destroy')
             ->where('equipoID', '[0-9]+');
 
-        Route::post('/fichaje/{$futbolistaID}', [EquipoController::class, 'fichaje'])
-            ->name('fichaje')
-            ->where('futbolistaID', '[0-9]+');
+        Route::post('/{equipoID}/fichar/{futbolistaID}', [EquipoController::class, 'fichar'])
+            ->name('fichar')
+            ->where('futbolistaID', '[0-9]+')
+            ->where('equipoID', '[0-9]+');
 
-        Route::post('/expulsion/{$futbolistaID}', [EquipoController::class, 'expulsion'])
-            ->name('expulsion')
-            ->where('futbolistaID', '[0-9]+');
+        Route::post('{equipoID}/expulsar/{futbolistaID}', [EquipoController::class, 'expulsar'])
+            ->name('expulsar')
+            ->where('futbolistaID', '[0-9]+')
+            ->where('equipoID', '[0-9]+');
     });
