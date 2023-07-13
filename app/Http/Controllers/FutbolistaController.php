@@ -11,7 +11,7 @@ class FutbolistaController extends Controller
     protected $reglas = [
         'nombre' => 'required|string|min:3|max:60',
         'ap_paterno' => 'required|string|min:3|max:60',
-        'ap_materno' => 'nullable|string|min:3|max:60|null',
+        'ap_materno' => 'nullable|string|min:3|max:60',
         'alias' => 'nullable|string|min:3|max:60',
         'no_camiseta' => 'required|numeric',
     ];
