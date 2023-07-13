@@ -6,21 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class loginController extends Controller
 {
-    protected $reglasLogin =[
+    protected $reglasLogin = [
         'email'     => 'required|string|max:60',
         'password'  => 'required|string|max:60',
     ];
 
-    protected $reglasRegister =[
+    protected $reglasRegister = [
         'name'      => 'required|string|max:60',
         'email'     => 'required|string|max:60',
         'password'  => 'required|string|max:60',
     ];
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
 
         $validacion = Validator::make($request->all(), $this->reglasLogin);
 
@@ -55,8 +57,9 @@ class loginController extends Controller
         ], 200);
     }
 
-    public function register(Request $request){
-        
+    public function register(Request $request)
+    {
+
         $validacion = Validator::make($request->all(), $this->reglasRegister);
 
         if ($validacion->fails())
@@ -89,13 +92,43 @@ class loginController extends Controller
         ], 201);
     }
 
-    public function logout(Request $request){
-        
+    public function logout(Request $request)
+    {
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'msg' => 'Sesión cerrada',
             'status' => 'success'
+        ], 200);
+    }
+
+    public function validar(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json([
+                'msg' => 'No se proporcionó un token de acceso',
+                'data' => $accessToken,
+                'status' => 401
+            ], 401);
+        }
+
+        $token = PersonalAccessToken::findToken($accessToken);
+
+        if (!$token || $token->revoked) {
+            return response()->json([
+                'msg' => 'El token de acceso no es válido',
+                'data' => $accessToken,
+                'status' => 401
+            ], 401);
+        }
+
+        return response()->json([
+            'msg' => 'Token de acceso válido',
+            'data' => true,
+            'status' => 200
         ], 200);
     }
 }
