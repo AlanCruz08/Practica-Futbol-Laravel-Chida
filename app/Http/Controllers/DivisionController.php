@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\division;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\equipo;
 
 
 class DivisionController extends Controller
@@ -15,7 +16,8 @@ class DivisionController extends Controller
         'liga' => 'required|string|max:255',
     ];
 
-    public function index(){
+    public function index()
+    {
         $divisiones = division::all();
 
         return response()->json([
@@ -25,7 +27,8 @@ class DivisionController extends Controller
         ], 200);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $validator = Validator::make($request->all(), $this->reglas);
 
@@ -59,7 +62,8 @@ class DivisionController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, int $divisionID){
+    public function update(Request $request, int $divisionID)
+    {
 
         $validator = Validator::make($request->all(), $this->reglas);
 
@@ -103,7 +107,8 @@ class DivisionController extends Controller
         ], 201);
     }
 
-    public function destroy(int $divisionID){
+    public function destroy(int $divisionID)
+    {
         $division = division::find($divisionID);
         if (!$division)
             return response()->json([
@@ -119,5 +124,42 @@ class DivisionController extends Controller
             'data' => $division,
             'status' => 201
         ], 201);
+    }
+
+    public function ascender(int $equipoID)
+    {
+        $equipo = Equipo::find($equipoID);
+        if (!$equipo) {
+            return response()->json([
+                'message' => 'Equipo no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
+        $division = $equipo->divisiones()->first();
+
+        if ($division) {
+            $nivelActual = $division->pivot->nivel;
+            if ($nivelActual > 1) {
+                $divisionAnterior = Division::whereHas('equipos', function ($query) use ($nivelActual) {
+                    $query->where('nivel', $nivelActual - 1);
+                })->first();
+                $equipo->divisiones()->sync([$divisionAnterior->id]);
+            } else {
+                return response()->json([
+                    'message' => 'El equipo ya se encuentra en el nivel más alto de la división',
+                    'status' => 200
+                ], 200);
+            }
+        } else {
+            // El equipo no tiene una división asignada
+            $divisionMasAlta = Division::orderBy('nivel', 'desc')->first();
+            $equipo->divisiones()->sync([$divisionMasAlta->id]);
+        }
+
+        return response()->json([
+            'message' => 'El equipo ha ascendido correctamente',
+            'status' => 200
+        ], 200);
     }
 }
