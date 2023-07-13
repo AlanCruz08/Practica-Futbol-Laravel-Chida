@@ -17,7 +17,9 @@ class EstadioFactory extends Factory
     public function definition()
     {
         return [
-            //
+            "nombre" => $this->faker->word,
+            "pais" => $this->faker->word,
+            "capacidad" => $this->faker->numberBetween(1, 100000),
         ];
     }
 }

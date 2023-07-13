@@ -17,7 +17,9 @@ class EquipoFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'nombre' => $this->faker->word,
+            'dir_deportivo' => $this->faker->word,
+            'estadio_id' => $this->faker->numberBetween(1, 9),
         ];
     }
 }
