@@ -212,14 +212,14 @@ class EquipoController extends Controller
         if(!$ligado)
             return response()->json([
                 'msg' => 'El equipo no tiene este futbolista',
-                'data' => $equipoID . ' ' . $futbolistaID,
+                'data' => 'equipo: '. $equipoID . ', futbolista: ' . $futbolistaID,
                 'status' => 422
             ], 422);
 
         $futbolista->equipos()->detach($equipoID);
 
         return response()->json([
-            'msg' => 'Futbolista exoulsado',
+            'msg' => 'Futbolista expulsado',
             'data' => $futbolista,
             'status' => 201
         ], 201);
