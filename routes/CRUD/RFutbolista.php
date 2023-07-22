@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FutbolistaController;
 
 
-Route::middleware(['auth:sanctum'])
-    ->prefix('futbolista')
+Route::/*middleware(['auth:sanctum'])
+    ->*/prefix('futbolista')
     ->group(function () {
 
         Route::get('/check', function () { return 'ok'; });

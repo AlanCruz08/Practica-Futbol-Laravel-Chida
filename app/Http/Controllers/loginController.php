@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\DB;
 
 class loginController extends Controller
 {
@@ -19,6 +20,10 @@ class loginController extends Controller
         'name'      => 'required|string|max:60',
         'email'     => 'required|string|max:60',
         'password'  => 'required|string|max:60',
+    ];
+
+    protected $reglasValidate = [
+        'id'        => 'required | numeric'
     ];
 
     public function login(Request $request)
@@ -105,28 +110,49 @@ class loginController extends Controller
 
     public function validar(Request $request)
     {
+        // $validacion = Validator::make($request->all(), $this->reglasValidate);
+        // if ($validacion->fails())
+        //     return response()->json([
+        //         'msg' => 'Error en las validaciones',
+        //         'data' => $validacion->errors(),
+        //         'status' => '422'
+        //     ], 422);
+
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
             return response()->json([
-                'msg' => 'No se proporcionó un token de acceso',
-                'data' => $accessToken,
-                'status' => 401
-            ], 401);
+                'msg' => 'Token no enviado',
+                'data' => null,
+                'status' => 404
+            ], 404);
         }
 
+        $id = $request->id;
         $token = PersonalAccessToken::findToken($accessToken);
 
         if (!$token || $token->revoked) {
             return response()->json([
-                'msg' => 'El token de acceso no es válido',
-                'data' => $accessToken,
+                'msg' => 'token no encontrado o revocado',
+                'data' => false,
                 'status' => 401
             ], 401);
         }
 
+        $consu = DB::table('personal_access_tokens')
+            ->where('tokenable_id', $id)
+            ->where('token', $token)
+            ->first();
+
+        if(!$consu)
+            response()->json([
+                'msg' => 'El token no es valido',
+                'data' => false,
+                'status' => 422
+            ], 422);
+
         return response()->json([
-            'msg' => 'Token de acceso válido',
+            'msg' => 'Token valido',
             'data' => true,
             'status' => 200
         ], 200);
