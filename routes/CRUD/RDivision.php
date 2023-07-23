@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DivisionController;
 
 Route::middleware(['auth:sanctum'])
-    ->prefix('division')
+    ->
+    prefix('division')
     ->group(function () {
 
         Route::get('/check', function () {
