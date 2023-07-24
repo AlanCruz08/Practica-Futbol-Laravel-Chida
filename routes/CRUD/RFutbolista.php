@@ -13,6 +13,9 @@ Route::/*middleware(['auth:sanctum'])
         Route::get('', [FutbolistaController::class, 'index'])
             ->name('index');
 
+            //ruta para traerte el jugador con el id que le pases
+        Route::get('/{futbolistaID}', [FutbolistaController::class, 'show']);
+
         Route::post('', [FutbolistaController::class, 'store'])
             ->name('store');
 

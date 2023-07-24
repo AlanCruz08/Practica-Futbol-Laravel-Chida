@@ -128,4 +128,26 @@ class FutbolistaController extends Controller
             'status' => 201
         ], 201);
     }
+
+    public function show(int $futbolistaID)
+{
+    $futbolista = futbolista::find($futbolistaID);
+
+    if (!$futbolista) {
+        return response()->json([
+            'msg' => 'Futbolista no encontrado',
+            'data' => null,
+            'status' => 404
+        ], 404);
+    }
+
+    return response()->json([
+        'msg' => 'Futbolista obtenido correctamente',
+        'data' => $futbolista,
+        'status' => 200
+    ], 200);
+}
+
+
+    
 }
