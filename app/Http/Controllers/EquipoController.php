@@ -224,4 +224,23 @@ class EquipoController extends Controller
             'status' => 201
         ], 201);
     }
+
+    public function show(int $equipoID)
+    {
+        $equipo = equipo::find($equipoID);
+    
+        if (!$equipo) {
+            return response()->json([
+                'msg' => 'Division no encontrada',
+                'data' => null,
+                'status' => 404
+            ], 404);
+        }
+    
+        return response()->json([
+            'msg' => 'Division obtenida correctamente',
+            'data' => $equipo,
+            'status' => 200
+        ], 200);
+    }
 }

@@ -14,6 +14,9 @@ Route::/*middleware(['auth:sanctum'])
         Route::get('', [DivisionController::class, 'index'])
             ->name('index');
 
+            //ruta para traerte la division con el id que le pases
+        Route::get('/{divisionID}', [DivisionController::class, 'show']);
+
         Route::post('', [DivisionController::class, 'store'])
             ->name('store');
 

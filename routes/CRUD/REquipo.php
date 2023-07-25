@@ -13,6 +13,9 @@ Route::/*middleware(['auth:sanctum'])
         Route::get('', [EquipoController::class, 'index'])
             ->name('index');
 
+                //ruta para traerte el equipo con el id que le pases
+        Route::get('/{equipoID}', [EquipoController::class, 'show']);
+
         Route::post('', [EquipoController::class, 'store'])
             ->name('store');
 

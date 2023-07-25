@@ -229,4 +229,23 @@ class DivisionController extends Controller
             ], 200);
         }
     }
+
+    public function show(int $divisionID)
+    {
+        $division = division::find($divisionID);
+    
+        if (!$division) {
+            return response()->json([
+                'msg' => 'Division no encontrada',
+                'data' => null,
+                'status' => 404
+            ], 404);
+        }
+    
+        return response()->json([
+            'msg' => 'Division obtenida correctamente',
+            'data' => $division,
+            'status' => 200
+        ], 200);
+    }
 }
