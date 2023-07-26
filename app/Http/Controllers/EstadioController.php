@@ -127,4 +127,23 @@ class EstadioController extends Controller
             'status' => 201
         ], 201);
     }
+
+    public function show(int $estadioID)
+    {
+        $estadio = estadio::find($estadioID);
+    
+        if (!$estadio) {
+            return response()->json([
+                'msg' => 'Estadio no encontrado',
+                'data' => null,
+                'status' => 404
+            ], 404);
+        }
+    
+        return response()->json([
+            'msg' => 'Estadio obtenido correctamente',
+            'data' => $estadio,
+            'status' => 200
+        ], 200);
+    }
 }

@@ -11,6 +11,10 @@ Route::/*middleware(['auth:sanctum'])
         Route::get('', [EstadioController::class, 'index'])
             ->name('index');
 
+         //ruta para traerte el equipo con el id que le pases
+        Route::get('/{estadioID}', [EstadioController::class, 'show']);
+
+
         Route::post('', [EstadioController::class, 'store'])
             ->name('store');
 
