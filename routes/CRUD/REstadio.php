@@ -2,8 +2,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstadioController;
 
-Route::/*middleware(['auth:sanctum'])
-    ->*/prefix('estadio')
+Route::middleware(['auth:sanctum'])
+    ->prefix('estadio')
     ->group(function () {
 
         Route::get('/check', function() { return 'ok'; });

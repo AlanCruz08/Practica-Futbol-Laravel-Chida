@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use function PHPUnit\Framework\returnSelf;
-
 class EquipoController extends Controller
 {
     protected $reglas = [
@@ -19,12 +17,20 @@ class EquipoController extends Controller
     ];
     public function index()
     {
+        $equipos = Equipo::with('estadio')->get();
 
-        $equipos = equipo::all();
+        $equiposConEstadio = $equipos->map(function ($equipo) {
+            return [
+                'id' => $equipo->id,
+                'nombre' => $equipo->nombre,
+                'dir_deportivo' => $equipo->dir_deportivo,
+                'estadio' => $equipo->estadio->nombre
+            ];
+        });
 
         return response()->json([
             'msg' => 'Equipos obtenidos correctamente',
-            'data' => $equipos,
+            'data' => $equiposConEstadio,
             'status' => 200
         ], 200);
     }
@@ -208,11 +214,11 @@ class EquipoController extends Controller
             ->where('equipo_id', $equipoID)
             ->where('futbolista_id', $futbolistaID)
             ->exists();
-        
-        if(!$ligado)
+
+        if (!$ligado)
             return response()->json([
                 'msg' => 'El equipo no tiene este futbolista',
-                'data' => 'equipo: '. $equipoID . ', futbolista: ' . $futbolistaID,
+                'data' => 'equipo: ' . $equipoID . ', futbolista: ' . $futbolistaID,
                 'status' => 422
             ], 422);
 
@@ -228,7 +234,7 @@ class EquipoController extends Controller
     public function show(int $equipoID)
     {
         $equipo = equipo::find($equipoID);
-    
+
         if (!$equipo) {
             return response()->json([
                 'msg' => 'Division no encontrada',
@@ -236,7 +242,7 @@ class EquipoController extends Controller
                 'status' => 404
             ], 404);
         }
-    
+
         return response()->json([
             'msg' => 'Division obtenida correctamente',
             'data' => $equipo,

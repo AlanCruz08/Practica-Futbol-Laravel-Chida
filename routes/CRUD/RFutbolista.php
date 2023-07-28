@@ -4,17 +4,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FutbolistaController;
 
 
-Route::/*middleware(['auth:sanctum'])
-    ->*/prefix('futbolista')
+Route::middleware(['auth:sanctum'])
+    ->prefix('futbolista')
     ->group(function () {
 
-        Route::get('/check', function () { return 'ok'; });
+        Route::get('/check', function () {
+            return 'ok';
+        });
 
         Route::get('', [FutbolistaController::class, 'index'])
             ->name('index');
 
-            //ruta para traerte el jugador con el id que le pases
-        Route::get('/{futbolistaID}', [FutbolistaController::class, 'show']);
+        Route::get('/{futbolistaID}', [FutbolistaController::class, 'show'])
+            ->name('show')
+            ->where('futbolistaID', '[0-9]+');;
 
         Route::post('', [FutbolistaController::class, 'store'])
             ->name('store');

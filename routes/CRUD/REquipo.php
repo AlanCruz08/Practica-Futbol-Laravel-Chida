@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipoController;
 use Database\Seeders\EquipoSeeder;
 
-Route::/*middleware(['auth:sanctum'])
-    ->*/prefix('equipo')
+Route::middleware(['auth:sanctum'])
+    ->prefix('equipo')
     ->group(function () {
 
         Route::get('/check', function() { return 'ok'; });
