@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('ap_paterno', 60);
             $table->string('ap_materno', 60)->nullable();
             $table->string('alias', 60)->nullable();
-            $table->unsignedBigInteger('no_camiseta');
+            $table->unsignedBigInteger('no_camiseta')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

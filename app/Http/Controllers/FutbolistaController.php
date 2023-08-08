@@ -13,7 +13,7 @@ class FutbolistaController extends Controller
         'ap_paterno' => 'required|string|min:3|max:60',
         'ap_materno' => 'nullable|string|min:3|max:60',
         'alias' => 'nullable|string|min:3|max:60',
-        'no_camiseta' => 'required|numeric',
+        'no_camiseta' => 'nullable|numeric',
     ];
 
     public function index()
@@ -111,7 +111,7 @@ class FutbolistaController extends Controller
                 'data' => null,
                 'status' => 401
             ], 401);
-        
+
         $futbolista = futbolista::find($futbolistaID);
         if (!$futbolista)
             return response()->json([
@@ -130,24 +130,21 @@ class FutbolistaController extends Controller
     }
 
     public function show(int $futbolistaID)
-{
-    $futbolista = futbolista::find($futbolistaID);
+    {
+        $futbolista = futbolista::find($futbolistaID);
 
-    if (!$futbolista) {
+        if (!$futbolista) {
+            return response()->json([
+                'msg' => 'Futbolista no encontrado',
+                'data' => null,
+                'status' => 404
+            ], 404);
+        }
+
         return response()->json([
-            'msg' => 'Futbolista no encontrado',
-            'data' => null,
-            'status' => 404
-        ], 404);
+            'msg' => 'Futbolista obtenido correctamente',
+            'data' => $futbolista,
+            'status' => 200
+        ], 200);
     }
-
-    return response()->json([
-        'msg' => 'Futbolista obtenido correctamente',
-        'data' => $futbolista,
-        'status' => 200
-    ], 200);
-}
-
-
-    
 }

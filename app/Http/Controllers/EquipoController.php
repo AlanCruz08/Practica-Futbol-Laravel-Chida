@@ -24,7 +24,8 @@ class EquipoController extends Controller
                 'id' => $equipo->id,
                 'nombre' => $equipo->nombre,
                 'dir_deportivo' => $equipo->dir_deportivo,
-                'estadio' => $equipo->estadio->nombre
+                'estadio' => $equipo->estadio->nombre,
+                'estadio_id' => $equipo->estadio->id
             ];
         });
 
@@ -237,14 +238,14 @@ class EquipoController extends Controller
 
         if (!$equipo) {
             return response()->json([
-                'msg' => 'Division no encontrada',
+                'msg' => 'Equipo no encontrada',
                 'data' => null,
                 'status' => 404
             ], 404);
         }
 
         return response()->json([
-            'msg' => 'Division obtenida correctamente',
+            'msg' => 'Equipo obtenido correctamente',
             'data' => $equipo,
             'status' => 200
         ], 200);
